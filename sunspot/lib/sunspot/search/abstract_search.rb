@@ -104,6 +104,17 @@ module Sunspot
           yield(hit, hit.result)
         end
       end
+      
+      def grouped
+        @grouped ||=
+            begin
+              grouped = if solr_response && solr_response['grouped']
+                solr_response['grouped'].map do |grouped_name, raw_content|
+                  Grouped.new(group_name, raw_content, self)
+                end
+              end
+            end
+      end
   
       # 
       # The total number of documents matching the query parameters
