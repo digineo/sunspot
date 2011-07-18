@@ -108,10 +108,8 @@ module Sunspot
       def grouped
         @grouped ||=
             begin
-              grouped = if solr_response && solr_response['grouped']
-                solr_response['grouped'].map do |grouped_name, raw_content|
-                  Grouped.new(group_name, raw_content, self)
-                end
+              grouped = solr_grouped.map do |group_name, raw_content|
+                Grouped.new(group_name, raw_content, self)
               end
             end
       end
@@ -273,7 +271,11 @@ module Sunspot
       def solr_response
         @solr_response ||= @solr_result['response'] || {}
       end
-  
+
+      def solr_grouped
+        @solr_grouped ||= @solr_result['grouped'] || {}
+      end
+
       def highlights_for(doc)
         if @solr_result['highlighting']
           @solr_result['highlighting'][doc['id']]
