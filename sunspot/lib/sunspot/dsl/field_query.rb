@@ -38,6 +38,10 @@ module Sunspot
         order_by(:random)
       end
 
+      def group_by(field_name, options={})
+        @query.group_by(@setup.field(field_name), options)
+      end
+
       #
       # Request a facet on the search query. A facet is a feature of Solr that
       # determines the number of documents that match the existing search *and*

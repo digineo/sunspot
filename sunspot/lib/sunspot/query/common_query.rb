@@ -43,6 +43,15 @@ module Sunspot
           @components << @pagination = Pagination.new(page, per_page)
         end
       end
+      
+      def group_by(field, options={})
+        if @grouping
+          @grouping.field = field
+          @grouping.options = options
+        else
+          @components << @grouping = Grouping.new(field, options)
+        end
+      end
 
       def to_params
         params = {}
