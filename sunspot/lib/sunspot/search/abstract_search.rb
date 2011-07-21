@@ -83,9 +83,11 @@ module Sunspot
           @hits ||=
             begin
               hits = if solr_response && solr_response['docs']
-                solr_response['docs'].map do |doc|
+                hits = solr_response['docs'].map do |doc|
                   Hit.new(doc, highlights_for(doc), self)
                 end
+              elsif solr_grouped && !solr_grouped.empty?
+                grouped.values.flatten.collect{|group| group.hits}.flatten.uniq
               end
               paginate_collection(hits || [])
             end
@@ -108,12 +110,16 @@ module Sunspot
       end
       
       def grouped
-        @grouped ||=
-            begin
-              grouped = solr_grouped.map do |group_name, raw_content|
-                Grouped.new(group_name, raw_content, self)
-              end
-            end
+        return @grouped if @grouped
+        
+        fields = Hash[ *@setup.fields.collect{|field| [field.indexed_name, field.name] }.flatten ]
+        
+        @grouped = {}
+        for grouped_name, grouped_content in solr_grouped
+          @grouped[fields[grouped_name]] = Grouped.new(grouped_name, grouped_content, @search, self)
+        end
+        
+        @grouped
       end
   
       # 
@@ -227,6 +233,7 @@ module Sunspot
       #
       def populate_hits #:nodoc:
         id_hit_hash = Hash.new { |h, k| h[k] = {} }
+        
         hits.each do |hit|
           id_hit_hash[hit.class_name][hit.primary_key] = hit
         end

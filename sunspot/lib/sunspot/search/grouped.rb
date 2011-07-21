@@ -3,23 +3,16 @@ module Sunspot
     # 
     # A set of Groups
     # 
-    class Grouped
-      attr_reader :name, :matches
+    class Grouped < Array
+      attr_reader :matches, :field_name
       
-      def initialize(name, raw, search) #:nodoc:
-        @name    = name
-        @raw     = raw
-        @search  = search
-        @matches = raw['matches']
-      end
-      
-      def groups
-        @groups ||=
-          begin
-            @raw['groups'].map do |raw_group|
-              Group.new(raw_group, @search)
-            end
-          end
+      def initialize(field_name, solr_grouped, setup, search) #:nodoc:
+        @field_name = field_name
+        @matches    = solr_grouped["matches"]
+        
+        for raw_group in solr_grouped["groups"]
+          self << Group.new(raw_group, setup, search)
+        end
       end
     end
   end
