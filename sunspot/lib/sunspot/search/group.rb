@@ -9,7 +9,7 @@ module Sunspot
 
       def initialize(raw_group, setup, search) #:nodoc:
         @group_value = raw_group['groupValue']
-        @num_found = raw_group['doclist']['groupValue']
+        @num_found = raw_group['doclist']['numFound']
         @start     = raw_group['doclist']['start']
         @docs      = raw_group['doclist']['docs']
         
