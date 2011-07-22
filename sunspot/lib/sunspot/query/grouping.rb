@@ -5,8 +5,10 @@ module Sunspot
     #
     class Grouping #:nodoc:
       @@known_options = {
-        :limit => true,
-        :sort  => true
+        :offset  => true,
+        :limit   => true,
+        :sort    => true,
+        :ngroups => true
       }.freeze
       
       attr_reader :field, :options

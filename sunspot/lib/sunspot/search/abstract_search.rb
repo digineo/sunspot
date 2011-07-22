@@ -110,16 +110,18 @@ module Sunspot
       end
       
       def grouped
-        return @grouped if @grouped
-        
-        fields = Hash[ *@setup.fields.collect{|field| [field.indexed_name, field.name] }.flatten ]
-        
-        @grouped = {}
-        for grouped_name, grouped_content in solr_grouped
-          @grouped[fields[grouped_name]] = Grouped.new(grouped_name, grouped_content, @search, self)
+        @grouped ||= begin
+          fields = Hash[ *@setup.fields.collect{|field| [field.indexed_name, field.name] }.flatten ]
+          
+          results = {}
+          for grouped_name, grouped_content in solr_grouped
+            # shortcut
+            grouped = Grouped.new(grouped_name, grouped_content, @setup, self)
+            results[fields[grouped_name]] = PaginatedCollection.new(grouped, @query.page, @query.per_page*(query["group.offset"]||1), grouped.matches)
+          end
+          
+          results
         end
-        
-        @grouped
       end
   
       # 

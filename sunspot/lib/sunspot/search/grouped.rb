@@ -14,6 +14,8 @@ module Sunspot
           self << Group.new(raw_group, setup, search)
         end
       end
+      
+      alias_method :num_found, :matches
     end
   end
 end
