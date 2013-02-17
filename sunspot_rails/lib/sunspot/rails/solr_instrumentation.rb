@@ -8,12 +8,10 @@ module Sunspot
         alias_method :request, :request_with_as_instrumentation
       end
 
-      module InstanceMethods
-        def request_with_as_instrumentation(path, params={}, *extra)
-          ActiveSupport::Notifications.instrument("request.rsolr",
-                                                  {:path => path, :parameters => params}) do
-            request_without_as_instrumentation(path, params, *extra)
-          end
+      def request_with_as_instrumentation(path, params={}, *extra)
+        ActiveSupport::Notifications.instrument("request.rsolr",
+                                                {:path => path, :parameters => params}) do
+          request_without_as_instrumentation(path, params, *extra)
         end
       end
     end
